@@ -1,29 +1,28 @@
 import React, { Fragment } from "react";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import "./App.css";
 import InpButt from "./service/for_chat/input_button";
 import Msg from "./service/for_chat/msg";
+import { io } from "socket.io-client";
 
 const App = () => {
-  // var ws = null;
-  // useEffect(() => {
-  //   ws = new WebSocket("ws://localhost:3000/ws");
-  //   ws.onopen = () => {
-  //     ws.send("Connected");
-  //   };
-  // });
-
   const [msg, setMsg] = useState("");
   const [msglist, setmsgList] = useState([]);
+    const socket = useRef(null)
 
   const handleChange = (e) => {
     e.preventDefault();
     setMsg(e.target.value);
   };
 
+    useEffect(() => {
+        socket.current = io("http://localhost:8000")
+    }, [])
   const clickHandle = (e) => {
     let arr = msglist.concat(msg);
     setmsgList([...arr]);
+      console.log("weqwe")
+      socket.current.emit("send_message", {"message": msg })
   };
 
   console.log(msglist.id);

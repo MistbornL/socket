@@ -35,24 +35,23 @@ app = FastAPI()
 
 
 
-sio = socketio.AsyncClient()
+sio = socketio.AsyncServer(async_mode="asgi", cors_allowed_origins="*")
+app = socketio.ASGIApp(sio)
+
 @sio.event
-async def connect():
-    await sio.connect('http://localhost:3000')  
-    print('my sid is', sio.sid)
-    print("I'm connected!")
+async def connect(sid, environ):
     await sio.emit("my message", {"hehe": "hoho"})
 
 @sio.event
-async def connect_error(data):
+async def connect_error(sid, data):
     print("The connection failed!", data)
 
 @sio.event
-async def disconnect():
+async def disconnect(sid):
     print("I'm disconnected!")
 
 
+@sio.event
+async def send_message(sid, data):
+    print("movida")
 
-@sio.on('connect')
-async def on_connect():
-    print("im connected")
